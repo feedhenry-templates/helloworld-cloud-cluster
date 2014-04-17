@@ -1,0 +1,10 @@
+{
+  "id": "hello_world_mbaas_instance",
+  "name": "Hello World MBaaS Instance",
+  "type": "cloud_nodejs",
+  "docs": "https://raw2.github.com/feedhenry-templates/helloworld-mbaas/master/README.md",
+  "repoUrl": "https://github.com/feedhenry-templates/helloworld-mbaas.git",
+  "repoBranch": "refs/heads/6066-connection-bugfixing",
+  "icon": "icon-cloud",
+  "category": "Sample Apps"
+}
