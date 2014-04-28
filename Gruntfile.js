@@ -42,9 +42,9 @@ module.exports = function(grunt) {
     },
     env : {
       options : {},
-      // Sample environment variable - see https://github.com/jsoverson/grunt-env for more information
+      // environment variables - see https://github.com/jsoverson/grunt-env for more information
       local: {
-        SAMPLE_ENV_VAR : 'sample-env-var'
+        FH_USE_LOCAL_DB: true
       }
     },
     shell: {
