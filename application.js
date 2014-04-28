@@ -1,17 +1,23 @@
 var mbaas = require('fh-mbaas-express');
 var express = require('express');
-var mainjs = require('./lib/main.js');
 
 // Cluster related
 var cluster = require('cluster');
 var workers = [];     // Array of Worker processes
 var workerId = process.env.NODE_WORKER_ID || 0;
-
 var server;
+
+// Securable endpoints: list the endpoints which you want to make securable here
+var securableEndpoints = ['hello'];
 var app = express();
-app.use('/sys', mbaas.sys(mainjs));
+
+app.use('/sys', mbaas.sys(securableEndpoints));
 app.use('/mbaas', mbaas.mbaas);
-app.use('/cloud', mbaas.cloud(mainjs));
+
+// Note: important that this is added just before your own Routes
+app.use(mbaas.fhmiddleware());
+
+app.use('/hello', require('./lib/hello.js')());
 
 // You can define custom URL handlers here, like this one:
 app.use('/', function(req, res){
