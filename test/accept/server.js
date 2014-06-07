@@ -1,17 +1,18 @@
-var mbaas = require('fh-mbaas-express');
 var express = require('express');
+var mbaasApi = require('fh-mbaas-api');
+var mbaasExpress = mbaasApi.mbaasExpress();
 
 var app = express();
-app.use('/sys', mbaas.sys([]));
-app.use('/mbaas', mbaas.mbaas);
-app.use(mbaas.fhmiddleware());
+app.use('/sys', mbaasExpress.sys([]));
+app.use('/mbaas', mbaasExpress.mbaas);
+app.use(mbaasExpress.fhmiddleware());
 app.use('/hello', require('lib/hello.js')());
 
 app.use('/', function(req, res){
   res.end('Your Cloud App is Running');
 });
 
-app.use(mbaas.errorHandler());
+app.use(mbaasExpress.errorHandler());
 
 var server;
 
