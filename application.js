@@ -1,5 +1,6 @@
 var mbaas = require('fh-mbaas-express');
 var express = require('express');
+var cors = require('cors');
 
 // Cluster related
 var cluster = require('cluster');
@@ -11,6 +12,10 @@ var server;
 var securableEndpoints = ['hello'];
 var app = express();
 
+// Enable CORS for all requests
+app.use(cors());
+
+// Note: the order which we add middleware to Express here is important!
 app.use('/sys', mbaas.sys(securableEndpoints));
 app.use('/mbaas', mbaas.mbaas);
 

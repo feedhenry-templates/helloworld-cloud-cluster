@@ -1,5 +1,6 @@
 var mbaas = require('fh-mbaas-express');
 var express = require('express');
+var fh = require('fh-mbaas-api');
 
 var app = express();
 app.use('/sys', mbaas.sys([]));
@@ -24,9 +25,13 @@ exports.setUp = function(finish){
 };
 
 exports.tearDown = function(finish) {
-  if (server) {
-    server.close(function() {
-      finish();
-    });
-  }
+  fh.db({
+    "act": "close"
+  }, function(err) {
+    if (server) {
+      server.close(function() {
+        finish();
+      });
+    }
+  });
 };

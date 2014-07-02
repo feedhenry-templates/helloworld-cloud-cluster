@@ -19,6 +19,11 @@
     "proxyquire": "0.5.3",
     "grunt-shell": "0.6.4",
     "istanbul": "0.2.7",
-    "grunt-env": "~0.4.1"
+    "grunt-env": "~0.4.1",
+    "load-grunt-tasks": "~0.4.0",
+    "time-grunt": "~0.3.1",
+    "grunt-node-inspector": "~0.1.5",
+    "grunt-open": "~0.2.3",
+    "grunt-plato": "~1.0.0"
   }
 }

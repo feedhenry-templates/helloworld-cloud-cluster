@@ -12,7 +12,7 @@ exports.tearDown = function(finish) {
   finish();
 };
 
-exports.it_should_test_happy_GET = function(finish) {
+exports.it_should_test_hello_GET = function(finish) {
 
   // Note we have no requires in hello.js to stub out.
   // For more information on using proxyquire, see: https://github.com/thlorenz/proxyquire
@@ -48,7 +48,7 @@ exports.it_should_test_happy_GET = function(finish) {
 };
 
 
-exports.it_should_test_happy_POST = function(finish) {
+exports.it_should_test_hello_POST = function(finish) {
 
   // Note we have no requires in hello.js to stub out.
   // For more information on using proxyquire, see: https://github.com/thlorenz/proxyquire

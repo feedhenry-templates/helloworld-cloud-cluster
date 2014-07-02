@@ -15,6 +15,10 @@ Run ```grunt serve``` to serve this App locally. By default this App will run on
 
 Note that 'grunt serve' supports live reload, i.e. it will monitor for any changes in your node.js application and automatically restart the server
 
+## grunt debug
+
+Run ```grunt debug``` to debug this App locally. This task uses [Node Inspector](https://github.com/node-inspector/node-inspector) to debug your application, and will open the Debugger at 'application.js' in Google Chrome. See the documentation for [Node Inspector](https://github.com/node-inspector/node-inspector) for more information on how to use Node Inspector.
+
 ## grunt test
 
 This App uses the [Turbo](https://github.com/feedhenry/turbo) test runner. There is a sample unit test provided in test/unit/test-main.js. We also encourage the use of [Proxyquire](https://github.com/thlorenz/proxyquire) for mocking dependencies.
@@ -26,6 +30,10 @@ Run ```grunt test``` to run the unit tests for this App.
 This App uses [Istanbul](https://github.com/gotwarlost/istanbul) for generating code coverage for your tests.
 
 Run ```grunt coverage``` to run code coverage for this App.
+
+## grunt analysis
+
+Run ```grunt analysis``` to get a static analysis report of your code. This task uses [Plato](https://github.com/es-analysis/plato) to generate the report. See the documentaion for [Plato](https://github.com/es-analysis/plato) for more information on how to use and configure Plato.
 
 ## Environment variables
 

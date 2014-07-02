@@ -1,6 +1,7 @@
 'use strict';
 
 module.exports = function(grunt) {
+  require('time-grunt')(grunt);
   // Project Configuration
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
@@ -35,7 +36,8 @@ module.exports = function(grunt) {
       }
     },
     concurrent: {
-      tasks: ['nodemon', 'watch'],
+      serve: ['nodemon', 'watch'],
+      debug: ['node-inspector', 'shell:debug', 'open:debug'],
       options: {
         logConcurrentOutput: true
       }
@@ -47,7 +49,16 @@ module.exports = function(grunt) {
         FH_USE_LOCAL_DB: true
       }
     },
+    'node-inspector': {
+      dev: {}
+    },
     shell: {
+      debug: {
+        options: {
+          stdout: true
+        },
+        command: 'env NODE_PATH=. node --debug-brk application.js'
+      },
       unit: {
         options: {
           stdout: true,
@@ -86,29 +97,48 @@ module.exports = function(grunt) {
           'echo "See html coverage at: `pwd`/coverage/lcov-report/index.html"'
         ].join('&&')
       }
+    },
+    open: {
+      debug: {
+        path: 'http://127.0.0.1:8080/debug?port=5858',
+        app: 'Google Chrome'
+      },
+      platoReport: {
+        path: './plato/index.html',
+        app: 'Google Chrome'
+      }
+    },
+    plato: {
+      src: {
+        options : {
+          jshint : grunt.file.readJSON('.jshintrc')
+        },
+        files: {
+          'plato': ['lib/**/*.js']
+        }
+      }
     }
   });
 
   // Load NPM tasks
-  grunt.loadNpmTasks('grunt-contrib-watch');
-  grunt.loadNpmTasks('grunt-nodemon');
-  grunt.loadNpmTasks('grunt-concurrent');
-  grunt.loadNpmTasks('grunt-shell');
-  grunt.loadNpmTasks('grunt-env');
+  require('load-grunt-tasks')(grunt, {scope: 'devDependencies'});
 
   // Testing tasks
   grunt.registerTask('test', ['shell:unit', 'shell:accept']);
   grunt.registerTask('unit', ['shell:unit']);
-  grunt.registerTask('accept', ['shell:accept']);
+  grunt.registerTask('accept', ['env:local', 'shell:accept']);
 
   // Coverate tasks
   grunt.registerTask('coverage', ['shell:coverage_unit', 'shell:coverage_accept']);
   grunt.registerTask('coverage-unit', ['shell:coverage_unit']);
-  grunt.registerTask('coverage-accept', ['shell:coverage_accept']);
+  grunt.registerTask('coverage-accept', ['env:local', 'shell:coverage_accept']);
 
   // Making grunt default to force in order not to break the project.
   grunt.option('force', true);
 
-  grunt.registerTask('serve', ['env:local', 'concurrent']);
+  grunt.registerTask('analysis', ['plato:src', 'open:platoReport']);
+
+  grunt.registerTask('serve', ['env:local', 'concurrent:serve']);
+  grunt.registerTask('debug', ['env:local', 'concurrent:debug']);
   grunt.registerTask('default', ['serve']);
 };

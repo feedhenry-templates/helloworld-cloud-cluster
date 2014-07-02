@@ -1,10 +1,10 @@
 # FeedHenry Hello World MBaaS Server
 
-This is a blank 'hello world' FeedHenry MBaaS. Use is as a starting point for building your APIs. 
+This is a blank 'hello world' FeedHenry MBaaS. Use it as a starting point for building your APIs. 
 
 # Group Hello World API
 
-# hello [/cloud/hello]
+# hello [/hello]
 
 'Hello world' endpoint.
 
