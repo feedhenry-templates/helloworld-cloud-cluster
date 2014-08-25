@@ -1,5 +1,6 @@
-var mbaas = require('fh-mbaas-express');
+var mbaasApi = require('fh-mbaas-api');
 var express = require('express');
+var mbaasExpress = mbaasApi.mbaasExpress();
 var cors = require('cors');
 
 // Cluster related
@@ -16,11 +17,11 @@ var app = express();
 app.use(cors());
 
 // Note: the order which we add middleware to Express here is important!
-app.use('/sys', mbaas.sys(securableEndpoints));
-app.use('/mbaas', mbaas.mbaas);
+app.use('/sys', mbaasExpress.sys(securableEndpoints));
+app.use('/mbaas', mbaasExpress.mbaas);
 
 // Note: important that this is added just before your own Routes
-app.use(mbaas.fhmiddleware());
+app.use(mbaasExpress.fhmiddleware());
 
 app.use('/hello', require('./lib/hello.js')());
 
@@ -30,7 +31,7 @@ app.use('/', function(req, res){
 });
 
 // Important that this is last!
-app.use(mbaas.errorHandler());
+app.use(mbaasExpress.errorHandler());
 
 // Start a worker process
 function startWorker() {
