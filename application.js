@@ -35,10 +35,12 @@ app.use(mbaasExpress.errorHandler());
 
 // Start a worker process
 function startWorker() {
-  var port = process.env.FH_PORT || process.env.VCAP_APP_PORT || 8001;
-  server = app.listen(port, function(){
-    console.log("App started at: " + new Date() + " on port: " + port);
+  var port = process.env.FH_PORT || process.env.OPENSHIFT_NODEJS_PORT || 8001;
+  var host = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1';
+  server = app.listen(port, host, function() {
+    console.log("App started at: " + new Date() + " on port: " + port); 
   });
+
 };
 
 // Start function
