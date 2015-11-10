@@ -6,7 +6,6 @@ var cors = require('cors');
 // Cluster related
 var cluster = require('cluster');
 var workers = [];     // Array of Worker processes
-var workerId = process.env.NODE_WORKER_ID || 0;
 var server;
 
 // Securable endpoints: list the endpoints which you want to make securable here
@@ -41,7 +40,23 @@ function startWorker() {
     console.log("App started at: " + new Date() + " on port: " + port); 
   });
 
-};
+}
+
+// Utility function: handle workers exiting (which can happen cleanly or due to an error)
+function workerExitHandler(worker, code, signal) {
+  if (worker.suicide === true) {
+    console.log("Cleanly exiting..");
+    process.exit(0);
+  } else {
+    var msg = "Worker: " + worker.process.pid + " has died!! code=" + code + " signal=" + signal + " Respawning..";
+    console.error(msg);
+    var newWorker = cluster.fork();
+    for (var i = 0; i < workers.length; i++) {
+      if (workers[i] && workers[i].id === worker.id) workers.splice(i);
+    }
+    workers.push(newWorker);
+  }
+}
 
 // Start function
 // The number of workers to start can be specified with the FH_NUM_WORKERS env variable
@@ -58,10 +73,10 @@ function start() {
   } else {
     startWorker();
   }
-};
+}
 
 // Clean shutdown..
-var cleanShutdown = function(cb) {
+var cleanShutdown = function() {
   if (cluster.isMaster) {
     // shutdown all our workers - we exit when all workers have exited..
     for (var i = 0; i < workers.length; i++) {
@@ -83,23 +98,6 @@ var cleanShutdown = function(cb) {
 // Signal handlers for cleanly shutting down
 process.on('SIGTERM', cleanShutdown);
 process.on('SIGHUP', cleanShutdown);
-
-
-// Utility function: handle workers exiting (which can happen cleanly or due to an error)
-function workerExitHandler(worker, code, signal) {
-  if (worker.suicide === true) {
-    console.log("Cleanly exiting..");
-    process.exit(0);
-  } else {
-    var msg = "Worker: " + worker.process.pid + " has died!! Respawning..";
-    console.error(msg);
-    var newWorker = cluster.fork();
-    for (var i = 0; i < workers.length; i++) {
-      if (workers[i] && workers[i].id === worker.id) workers.splice(i);
-    }
-    workers.push(newWorker);
-  }
-};
 
 // start our app
 start();

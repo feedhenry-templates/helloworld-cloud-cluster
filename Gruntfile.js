@@ -42,11 +42,24 @@ module.exports = function(grunt) {
         logConcurrentOutput: true
       }
     },
-    env : {
-      options : {},
+    env: {
+      options: {},
       // environment variables - see https://github.com/jsoverson/grunt-env for more information
       local: {
-        FH_USE_LOCAL_DB: true
+        FH_USE_LOCAL_DB: true,
+        FH_SERVICE_MAP: function() {
+          /*
+           * Define the mappings for your services here - for local development.
+           * You must provide a mapping for each service you wish to access
+           * This can be a mapping to a locally running instance of the service (for local development)
+           * or a remote instance.
+           */
+          var serviceMap = {
+            'SERVICE_GUID_1': 'http://127.0.0.1:8010',
+            'SERVICE_GUID_2': 'https://host-and-path-to-service'
+          };
+          return JSON.stringify(serviceMap);
+        }
       }
     },
     'node-inspector': {
@@ -64,14 +77,14 @@ module.exports = function(grunt) {
           stdout: true,
           stderr: true
         },
-        command: 'env NODE_PATH=. ./node_modules/.bin/turbo test/unit'
+        command: 'env NODE_PATH=. ./node_modules/.bin/mocha -A -u exports --recursive test/unit/'
       },
       accept: {
         options: {
           stdout: true,
           stderr: true
         },
-        command: 'env NODE_PATH=. ./node_modules/.bin/turbo --setUp=test/accept/server.js --tearDown=test/accept/server.js test/accept'
+        command: 'env NODE_PATH=. ./node_modules/.bin/mocha -A -u exports --recursive test/server.js test/accept/'
       },
       coverage_unit: {
         options: {
@@ -110,22 +123,31 @@ module.exports = function(grunt) {
     },
     plato: {
       src: {
-        options : {
-          jshint : grunt.file.readJSON('.jshintrc')
+        options: {
+          jshint: grunt.file.readJSON('.jshintrc')
         },
         files: {
           'plato': ['lib/**/*.js']
         }
       }
-    }
+    },
+    jshint: {
+      files: ['*.js', 'lib/**/*.js', 'test/**/*.js'],
+      options: {
+        jshintrc: true
+      }
+    },
   });
 
   // Load NPM tasks
-  require('load-grunt-tasks')(grunt, {scope: 'devDependencies'});
+  require('load-grunt-tasks')(grunt, {
+    scope: 'devDependencies'
+  });
+  grunt.loadNpmTasks('grunt-contrib-jshint');
 
   // Testing tasks
-  grunt.registerTask('test', ['shell:unit', 'shell:accept']);
-  grunt.registerTask('unit', ['shell:unit']);
+  grunt.registerTask('test', ['jshint', 'shell:unit', 'shell:accept']);
+  grunt.registerTask('unit', ['jshint', 'shell:unit']);
   grunt.registerTask('accept', ['env:local', 'shell:accept']);
 
   // Coverate tasks
@@ -133,8 +155,6 @@ module.exports = function(grunt) {
   grunt.registerTask('coverage-unit', ['shell:coverage_unit']);
   grunt.registerTask('coverage-accept', ['env:local', 'shell:coverage_accept']);
 
-  // Making grunt default to force in order not to break the project.
-  grunt.option('force', true);
 
   grunt.registerTask('analysis', ['plato:src', 'open:platoReport']);
 
