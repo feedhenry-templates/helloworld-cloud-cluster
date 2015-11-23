@@ -27,7 +27,7 @@ exports.setUp = function(finish){
 exports.tearDown = function(finish) {
   fh.db({
     "act": "close"
-  }, function(err) {
+  }, function() {
     if (server) {
       server.close(function() {
         finish();
