@@ -2,7 +2,7 @@
   "name": "fh-app",
   "version": "0.1.0",
   "dependencies": {
-    "fh-mbaas-api": "5.5.4",
+    "fh-mbaas-api": "5.7.9",
     "request": "~2.40.0",
     "body-parser": "~1.0.2",
     "express": "~4.0.0",
