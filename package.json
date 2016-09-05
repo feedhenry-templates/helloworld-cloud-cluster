@@ -2,7 +2,7 @@
   "name": "helloworld-cloud-cluster",
   "version": "0.1.0",
   "dependencies": {
-    "fh-mbaas-api": "^5.13.9",
+    "fh-mbaas-api": "^5.13.11",
     "request": "~2.40.0",
     "body-parser": "~1.0.2",
     "express": "~4.0.0",
