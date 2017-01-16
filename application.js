@@ -8,8 +8,11 @@ var cluster = require('cluster');
 var workers = [];     // Array of Worker processes
 var server;
 
-// Securable endpoints: list the endpoints which you want to make securable here
-var securableEndpoints = ['hello'];
+
+// list the endpoints which you want to make securable here
+var securableEndpoints;
+securableEndpoints = ['/hello'];
+
 var app = express();
 
 // Enable CORS for all requests
@@ -19,15 +22,28 @@ app.use(cors());
 app.use('/sys', mbaasExpress.sys(securableEndpoints));
 app.use('/mbaas', mbaasExpress.mbaas);
 
+/* uncomment this code if you want to use $fh.auth in the app preview
+ * localAuth is only used for local development. 
+ * If the app is deployed on the platform, 
+ * this function will be ignored and the request will be forwarded 
+ * to the platform to perform authentication.
+
+app.use('/box', mbaasExpress.auth({localAuth: function(req, cb){
+  return cb(null, {status:401, body: {"message": "bad request"}});
+}}));
+
+or
+
+app.use('/box', mbaasExpress.core({localAuth: {status:401, body: {"message": "not authorised”}}}));
+*/
+
+// allow serving of static files from the public directory
+app.use(express.static(__dirname + '/public'));
+
 // Note: important that this is added just before your own Routes
 app.use(mbaasExpress.fhmiddleware());
 
 app.use('/hello', require('./lib/hello.js')());
-
-// You can define custom URL handlers here, like this one:
-app.use('/', function(req, res){
-  res.end('Your Cloud App is Running');
-});
 
 // Important that this is last!
 app.use(mbaasExpress.errorHandler());
@@ -37,7 +53,7 @@ function startWorker() {
   var port = process.env.FH_PORT || process.env.OPENSHIFT_NODEJS_PORT || 8001;
   var host = process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0';
   server = app.listen(port, host, function() {
-    console.log("App started at: " + new Date() + " on port: " + port); 
+    console.log("App started at: " + new Date() + " on port: " + port);
   });
 
 }

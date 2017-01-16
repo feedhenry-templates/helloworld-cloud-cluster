@@ -21,8 +21,6 @@ Run ```grunt debug``` to debug this App locally. This task uses [Node Inspector]
 
 ## grunt test
 
-This App uses the [Turbo](https://github.com/feedhenry/turbo) test runner. There is a sample unit test provided in test/unit/test-main.js. We also encourage the use of [Proxyquire](https://github.com/thlorenz/proxyquire) for mocking dependencies.
-
 Run ```grunt test``` to run the unit tests for this App.
 
 ## grunt coverage
