@@ -5,6 +5,7 @@ var cors = require('cors');
 
 // Cluster related
 var cluster = require('cluster');
+var childProcess = require('child_process');
 var workers = [];     // Array of Worker processes
 var server;
 
@@ -48,6 +49,36 @@ app.use('/hello', require('./lib/hello.js')());
 // Important that this is last!
 app.use(mbaasExpress.errorHandler());
 
+/*
+  Get the number of CPUs that are actually available to this process.
+  Can be overwritten with the FH_NUM_WORKERS env var
+*/
+function getNumCPUs(cb) {
+  var numCPUs = process.env.FH_NUM_WORKERS;
+  if (!numCPUs) {
+    childProcess.exec('nproc', function(err, stdout){
+      if (err) {
+        if (err.code !== 127) {
+          // something went wrong on Linux, callback with the error
+          return cb(err);
+        } else {
+          // `nproc` doesn't exist on macOS & Win.
+          // Fallback to `os`
+          console.log('Using native os lib to determine num cpus');
+          return cb(null, require('os').cpus().length);
+        }
+      }
+      console.log('Using nproc to determine num cpus');
+      return cb(null, parseInt(stdout));
+    });
+  } else {
+    process.nextTick(function() {
+      console.log('Using FH_NUM_WORKERS to determine num cpus')
+      return cb(null, numCPUs);
+    });
+  }
+}
+
 // Start a worker process
 function startWorker() {
   var port = process.env.FH_PORT || process.env.OPENSHIFT_NODEJS_PORT || 8001;
@@ -78,14 +109,20 @@ function workerExitHandler(worker, code, signal) {
 // The number of workers to start can be specified with the FH_NUM_WORKERS env variable
 function start() {
   if (cluster.isMaster) {
-    var numCPUs = process.env.FH_NUM_WORKERS || require('os').cpus().length;
-    for (var i = 0; i < numCPUs; i++) {
-      var worker = cluster.fork();
-      workers.push(worker);
-    }
+    getNumCPUs(function(err, numCPUs) {
+      if (err) {
+        console.error(err);
+        process.exit(1);
+      }
+      console.log('MASTER: numCPUs=' + numCPUs);
+      for (var i = 0; i < numCPUs; i++) {
+        var worker = cluster.fork();
+        workers.push(worker);
+      }
 
-    // Handle workers exiting
-    cluster.on('exit', workerExitHandler);
+      // Handle workers exiting
+      cluster.on('exit', workerExitHandler);
+    });
   } else {
     startWorker();
   }
