@@ -1,12 +1,12 @@
 {
   "name": "helloworld-cloud-cluster",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "dependencies": {
+    "body-parser": "~1.15.2",
+    "cors": "~2.8.1",
+    "express": "~4.14.0",
     "fh-mbaas-api": "6.1.3",
-    "request": "~2.40.0",
-    "body-parser": "~1.0.2",
-    "express": "~4.0.0",
-    "cors": "~2.2.0"
+    "request": "~2.40.0"
   },
   "devDependencies": {
     "grunt-concurrent": "latest",
@@ -27,10 +27,11 @@
     "supertest": "0.8.2",
     "time-grunt": "^0.3.2"
   },
-  "license": "Apache-2.0",
   "main": "application.js",
   "scripts": {
-    "start": "node application.js",
-    "test": "grunt unit"
-  }
+    "test": "grunt unit",
+    "debug": "grunt serve",
+    "start": "node application.js"
+  },
+  "license": "mit"
 }

@@ -5,11 +5,15 @@ var cors = require('cors');
 
 // Cluster related
 var cluster = require('cluster');
+var childProcess = require('child_process');
 var workers = [];     // Array of Worker processes
 var server;
 
-// Securable endpoints: list the endpoints which you want to make securable here
-var securableEndpoints = ['hello'];
+
+// list the endpoints which you want to make securable here
+var securableEndpoints;
+securableEndpoints = ['/hello'];
+
 var app = express();
 
 // Enable CORS for all requests
@@ -19,25 +23,68 @@ app.use(cors());
 app.use('/sys', mbaasExpress.sys(securableEndpoints));
 app.use('/mbaas', mbaasExpress.mbaas);
 
+/* uncomment this code if you want to use $fh.auth in the app preview
+ * localAuth is only used for local development. 
+ * If the app is deployed on the platform, 
+ * this function will be ignored and the request will be forwarded 
+ * to the platform to perform authentication.
+
+app.use('/box', mbaasExpress.auth({localAuth: function(req, cb){
+  return cb(null, {status:401, body: {"message": "bad request"}});
+}}));
+
+or
+
+app.use('/box', mbaasExpress.core({localAuth: {status:401, body: {"message": "not authorised”}}}));
+*/
+
+// allow serving of static files from the public directory
+app.use(express.static(__dirname + '/public'));
+
 // Note: important that this is added just before your own Routes
 app.use(mbaasExpress.fhmiddleware());
 
 app.use('/hello', require('./lib/hello.js')());
 
-// You can define custom URL handlers here, like this one:
-app.use('/', function(req, res){
-  res.end('Your Cloud App is Running');
-});
-
 // Important that this is last!
 app.use(mbaasExpress.errorHandler());
+
+/*
+  Get the number of CPUs that are actually available to this process.
+  Can be overwritten with the FH_NUM_WORKERS env var
+*/
+function getNumCPUs(cb) {
+  var numCPUs = process.env.FH_NUM_WORKERS;
+  if (!numCPUs) {
+    childProcess.exec('nproc', function(err, stdout){
+      if (err) {
+        if (err.code !== 127) {
+          // something went wrong on Linux, callback with the error
+          return cb(err);
+        } else {
+          // `nproc` doesn't exist on macOS & Win.
+          // Fallback to `os`
+          console.log('Using native os lib to determine num cpus');
+          return cb(null, require('os').cpus().length);
+        }
+      }
+      console.log('Using nproc to determine num cpus');
+      return cb(null, parseInt(stdout));
+    });
+  } else {
+    process.nextTick(function() {
+      console.log('Using FH_NUM_WORKERS to determine num cpus')
+      return cb(null, numCPUs);
+    });
+  }
+}
 
 // Start a worker process
 function startWorker() {
   var port = process.env.FH_PORT || process.env.OPENSHIFT_NODEJS_PORT || 8001;
   var host = process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0';
   server = app.listen(port, host, function() {
-    console.log("App started at: " + new Date() + " on port: " + port); 
+    console.log("App started at: " + new Date() + " on port: " + port);
   });
 
 }
@@ -62,14 +109,20 @@ function workerExitHandler(worker, code, signal) {
 // The number of workers to start can be specified with the FH_NUM_WORKERS env variable
 function start() {
   if (cluster.isMaster) {
-    var numCPUs = process.env.FH_NUM_WORKERS || require('os').cpus().length;
-    for (var i = 0; i < numCPUs; i++) {
-      var worker = cluster.fork();
-      workers.push(worker);
-    }
+    getNumCPUs(function(err, numCPUs) {
+      if (err) {
+        console.error(err);
+        process.exit(1);
+      }
+      console.log('MASTER: numCPUs=' + numCPUs);
+      for (var i = 0; i < numCPUs; i++) {
+        var worker = cluster.fork();
+        workers.push(worker);
+      }
 
-    // Handle workers exiting
-    cluster.on('exit', workerExitHandler);
+      // Handle workers exiting
+      cluster.on('exit', workerExitHandler);
+    });
   } else {
     startWorker();
   }
