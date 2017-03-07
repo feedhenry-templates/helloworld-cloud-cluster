@@ -6,7 +6,7 @@
     "cors": "~2.8.1",
     "express": "~4.14.0",
     "request": "2.79.0",
-    "fh-mbaas-api": "6.1.5"
+    "fh-mbaas-api": "^6.1.6"
   },
   "devDependencies": {
     "grunt-concurrent": "latest",
