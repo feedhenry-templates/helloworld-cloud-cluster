@@ -4,3 +4,4 @@ cov-*
 coverage
 plato
 .idea
+.DS_Store
