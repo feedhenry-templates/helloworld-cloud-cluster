@@ -24,3 +24,21 @@ This is a blank 'hello world' FeedHenry MBaaS. Use it as a starting point for bu
             {
               "msg": "Hello world"
             }
+# Tests
+
+All the tests are in the "test/" directory. The cloud app is using moka as the test runner. 
+
+To run:
+* unit the tests:
+```
+npm run unit
+```
+* acceptance tests
+```    
+npm run serve
+npm run accept
+```
+* coverage report for unit tests:
+```
+npm run coverage-unit
+```

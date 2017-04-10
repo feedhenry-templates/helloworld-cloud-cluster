@@ -3,7 +3,7 @@ var request = require("request");
 var util = require('util');
 var assert = require('assert');
 
-var baseUrl = "http://127.0.0.1:8052/hello";
+var baseUrl = "http://127.0.0.1:8001/hello";
 
 /*
  * A very simple acceptance test. This test requires the server to be running (this is setup via the 'grunt accept' task)
