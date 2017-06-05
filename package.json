@@ -9,29 +9,35 @@
     "fh-mbaas-api": "~7.0.9"
   },
   "devDependencies": {
-    "grunt-concurrent": "latest",
-    "grunt-contrib-jshint": "^0.11.3",
-    "grunt-contrib-watch": "latest",
-    "grunt-env": "~0.4.1",
-    "grunt-node-inspector": ">=0.2.0",
-    "grunt-nodemon": "0.4.2",
-    "grunt-open": "~0.2.3",
-    "grunt-plato": "~1.0.0",
-    "grunt-shell": "^0.7.0",
+    "grunt": "^1.0.1",
+    "grunt-cli": "^1.2.0",
+    "grunt-concurrent": "^2.3.1",
+    "grunt-contrib-jshint": "^1.1.0",
+    "grunt-env": "^0.4.4",
+    "grunt-node-inspector": "^0.4.2",
+    "grunt-nodemon": "^0.4.2",
+    "grunt-open": "^0.2.3",
+    "grunt-shell": "^2.1.0",
     "istanbul": "0.2.7",
-    "load-grunt-tasks": "^0.4.0",
-    "mocha": "^2.1.0",
+    "load-grunt-tasks": "~0.4.0",
+    "mocha": "3.2.0",
+    "nock": "~0.44.0",
+    "node-inspector": "^1.0.0",
     "proxyquire": "0.5.3",
     "should": "2.1.1",
-    "sinon": "^1.17.2",
+    "sinon": "~1.10.3",
     "supertest": "0.8.2",
-    "time-grunt": "^0.3.2"
+    "time-grunt": "~0.3.1"
   },
   "main": "application.js",
   "scripts": {
-    "test": "grunt unit",
-    "debug": "grunt serve",
-    "start": "node application.js"
+    "start": "node application.js",
+    "serve": "grunt serve",
+    "unit": "grunt unit",
+    "accept": "grunt accept",
+    "test": "npm run unit",
+    "coverage-unit": "grunt coverage-unit",
+    "coverage-accept": "grunt coverage-accept"
   },
   "license": "mit"
 }

@@ -3,12 +3,12 @@ var assert = require('assert');
 var util = require('util');
 
 // Sample setUp call - note this is called once, before the other tests in this file are run
-exports.setUp = function(finish) {
+exports.before = function(finish) {
   finish();
 };
 
 // Sample tearDown - note this is called once, after all other tests have been run in this file
-exports.tearDown = function(finish) {
+exports.after = function(finish) {
   finish();
 };
 
