@@ -36,7 +36,7 @@ module.exports = function(grunt) {
       }
     },
     concurrent: {
-      serve: ['nodemon'],
+      serve: ['nodemon', 'watch'],
       debug: ['node-inspector', 'shell:debug', 'open:debug'],
       options: {
         logConcurrentOutput: true
@@ -77,14 +77,14 @@ module.exports = function(grunt) {
           stdout: true,
           stderr: true
         },
-        command: 'env NODE_PATH=. ./node_modules/.bin/mocha -A -u exports --recursive test/unit/test-*.js'
+        command: 'env NODE_PATH=. ./node_modules/.bin/mocha -A -u exports --recursive test/unit/'
       },
       accept: {
         options: {
           stdout: true,
           stderr: true
         },
-        command: 'env NODE_PATH=. ./node_modules/.bin/mocha -A -u exports --recursive test/accept/test-*.js'
+        command: 'env NODE_ENV=test env NODE_PATH=. ./node_modules/.bin/mocha -A -u exports --recursive test/accept/'
       },
       coverage_unit: {
         options: {
@@ -93,9 +93,9 @@ module.exports = function(grunt) {
         },
         command: [
           'rm -rf coverage cov-unit',
-          'env NODE_PATH=. ./node_modules/.bin/istanbul cover --dir cov-unit ./node_modules/.bin/_mocha -- -u exports --recursive test/unit/test-*.js',
+          'env NODE_PATH=. ./node_modules/.bin/istanbul cover --dir cov-unit ./node_modules/.bin/_mocha -- -u exports  -R spec ./test/unit/*.js',
          './node_modules/.bin/istanbul report',
-          'echo "See html coverage at: `pwd`/coverage/lcov-report/index.html"'
+          'echo "See unit test coverage at: `pwd`/cov-unit/lcov-report/index.html"'
         ].join('&&')
       },
       coverage_accept: {
@@ -105,9 +105,18 @@ module.exports = function(grunt) {
         },
         command: [
           'rm -rf coverage cov-accept',
-          'env NODE_PATH=. ./node_modules/.bin/istanbul cover --dir cov-accept ./node_modules/.bin/_mocha -- -u exports --recursive test/accept/test-*.js ',
+          'env NODE_ENV=test env NODE_PATH=. ./node_modules/.bin/istanbul cover --dir cov-accept ./node_modules/.bin/_mocha -- -u exports  -R spec ./test/accept/*.js',
           './node_modules/.bin/istanbul report',
-          'echo "See html coverage at: `pwd`/coverage/lcov-report/index.html"'
+          'echo "See acceptance coverage at: `pwd`/cov-accept/lcov-report/index.html"'
+        ].join('&&')
+      },
+      coverage: {
+        options: {
+          stdout: true,
+          stderr: true
+        },
+        command: [
+          'echo "See full coverage at: `pwd`/coverage/lcov-report/index.html"'
         ].join('&&')
       }
     },
@@ -146,12 +155,12 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-jshint');
 
   // Testing tasks
-  grunt.registerTask('test', [ 'shell:unit', 'shell:accept']);
-  grunt.registerTask('unit', [ 'shell:unit']);
+  grunt.registerTask('test', ['jshint', 'shell:unit', 'shell:accept']);
+  grunt.registerTask('unit', ['jshint', 'shell:unit']);
   grunt.registerTask('accept', ['env:local', 'shell:accept']);
 
   // Coverate tasks
-  grunt.registerTask('coverage', ['shell:coverage_unit', 'shell:coverage_accept']);
+  grunt.registerTask('coverage', ['shell:coverage_unit', 'shell:coverage_accept', 'shell:coverage']);
   grunt.registerTask('coverage-unit', ['shell:coverage_unit']);
   grunt.registerTask('coverage-accept', ['env:local', 'shell:coverage_accept']);
 

@@ -2,6 +2,7 @@
 var request = require("request");
 var util = require('util');
 var assert = require('assert');
+require('../../application.js');
 
 var baseUrl = "http://127.0.0.1:8001/hello";
 
