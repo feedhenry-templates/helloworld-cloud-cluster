@@ -108,7 +108,7 @@ function workerExitHandler(worker, code, signal) {
 // Start function
 // The number of workers to start can be specified with the FH_NUM_WORKERS env variable
 function start() {
-  if (cluster.isMaster) {
+  if (cluster.isMaster && process.env.NODE_ENV !== 'test') {
     getNumCPUs(function(err, numCPUs) {
       if (err) {
         console.error(err);
