@@ -2,11 +2,12 @@
   "name": "helloworld-cloud-cluster",
   "version": "0.2.0",
   "dependencies": {
-    "body-parser": "~1.17.2",
+    "body-parser": "~1.18.2",
     "cors": "~2.8.3",
-    "express": "~4.15.3",
+    "express": "~4.16.0",
     "request": "2.81.0",
-    "fh-mbaas-api": "~8.0.2"
+    "fh-mbaas-api": "~8.0.2",
+    "snyk": "^1.42.6"
   },
   "devDependencies": {
     "grunt": "~0.4.0",
@@ -40,7 +41,10 @@
     "coverage": "grunt coverage",
     "coverage-unit": "grunt coverage-unit",
     "coverage-accept": "grunt coverage-accept",
-    "analysis": "grunt analysis"
+    "analysis": "grunt analysis",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
   },
-  "license": "Apache-2.0"
+  "license": "Apache-2.0",
+  "snyk": true
 }
